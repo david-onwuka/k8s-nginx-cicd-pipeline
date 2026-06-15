@@ -61,8 +61,8 @@ jobs:
           mv kubectl $HOME/bin/
           echo "$HOME/bin" >> $GITHUB_PATH
 
-      # 9. Deploy to Kubernetes
+      # 9. Deploy to Kubernetes (FIXED)
       - name: Deploy to Kubernetes
         run: |
           kubectl set image deployment/nginx-app \
-          nginx-app=${{ secrets.DOCKER_USERNAME }}/nginx-k8s-app:${{ github.sha }}
+          nginx=${{ secrets.DOCKER_USERNAME }}/nginx-k8s-app:${{ github.sha }}
