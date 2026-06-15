@@ -55,5 +55,5 @@ jobs:
       # 8. Deploy to Kubernetes (PRODUCTION STYLE)
       - name: Deploy to Kubernetes
         run: |
-          kubectl set image deployment/nginx-deployment \
-          nginx=${{ secrets.DOCKER_USERNAME }}/nginx-k8s-app:${{ github.sha }}
+          kubectl set image deployment/nginx-app \
+          nginx-app=${{ secrets.DOCKER_USERNAME }}/nginx-k8s-app:${{ github.sha }}
