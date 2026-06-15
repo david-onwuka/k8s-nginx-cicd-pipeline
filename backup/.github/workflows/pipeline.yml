@@ -1,0 +1,59 @@
+name: Production CI/CD Pipeline
+
+on:
+  push:
+    branches:
+      - main
+
+jobs:
+  build-and-deploy:
+    runs-on: self-hosted
+
+    steps:
+      # 1. Checkout code
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      # 2. Validate Kubernetes YAML
+      - name: Install kubeconform
+        run: |
+          wget https://github.com/yannh/kubeconform/releases/latest/download/kubeconform-linux-amd64.tar.gz
+          tar xf kubeconform-linux-amd64.tar.gz
+          sudo mv kubeconform /usr/local/bin/
+
+      - name: Validate manifests
+        run: kubeconform -summary manifests/*.yaml
+
+      # 3. Set up Docker
+      - name: Set up Docker Buildx
+        uses: docker/setup-buildx-action@v3
+
+      # 4. Login to Docker Hub
+      - name: Login to Docker Hub
+        uses: docker/login-action@v3
+        with:
+          username: ${{ secrets.DOCKER_USERNAME }}
+          password: ${{ secrets.DOCKER_PASSWORD }}
+
+      # 5. Build Docker image (VERSIONED)
+      - name: Build Docker image
+        run: |
+          docker build -t ${{ secrets.DOCKER_USERNAME }}/nginx-k8s-app:${{ github.sha }} .
+
+      # 6. Push Docker image
+      - name: Push Docker image
+        run: |
+          docker push ${{ secrets.DOCKER_USERNAME }}/nginx-k8s-app:${{ github.sha }}
+
+      # 7. Install kubectl
+      - name: Install kubectl
+        run: |
+          curl -LO "https://dl.k8s.io/release/$(curl -L -s https://dl.k8s.io/release/stable.txt)/bin/linux/amd64/kubectl"
+          chmod +x kubectl
+          sudo mv kubectl /usr/local/bin/
+
+      # 8. Deploy to Kubernetes (PRODUCTION STYLE)
+      - name: Deploy to Kubernetes
+        run: |
+          kubectl set image deployment/nginx-deployment \
+          nginx=${{ secrets.DOCKER_USERNAME }}/nginx-k8s-app:${{ github.sha }}
