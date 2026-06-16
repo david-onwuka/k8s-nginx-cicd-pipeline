@@ -130,7 +130,7 @@ kubectl get deployment
 
 Example:
 
-![Kubernetes Deployment](screenshots/Getdployment.png)
+![Kubernetes Deployment](screenshots/getdeployment.png)
 
 ---
 
@@ -144,7 +144,7 @@ kubectl get pods
 
 Example:
 
-![Kubernetes Pods](screenshots/Getpod.png)
+![Kubernetes Pods](screenshots/getpod.png)
 
 ---
 
@@ -179,7 +179,7 @@ Benefits:
 
 Successful GitHub Actions deployment:
 
-![CI/CD Pipeline Success](screenshots/CICD.png)
+![CI/CD Pipeline Success](screenshots/cicd.png)
 
 ---
 
